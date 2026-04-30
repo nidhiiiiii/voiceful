@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parrot — Hackathon Presentation</title>
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --bg2: #111;
+    --card: #161616;
+    --border: #222;
+    --accent: #e8ff5a;
+    --accent2: #5affd5;
+    --accent3: #ff5a8a;
+    --text: #f0f0f0;
+    --muted: #666;
+    --code-bg: #0a0a0a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .deck {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 64px;
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+
+  /* nav */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    right: 36px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+  }
+
+  .nav button {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .nav button:hover { border-color: var(--accent); color: var(--accent); }
+
+  .slide-counter {
+    color: var(--muted);
+    font-size: 12px;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--accent);
+    transition: width 0.3s ease;
+    z-index: 100;
+  }
+
+  /* ---------- SLIDE STYLES ---------- */
+
+  /* slide 1: title */
+  .title-slide { text-align: center; gap: 20px; }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .hero-name {
+    font-size: clamp(72px, 10vw, 120px);
+    font-weight: 900;
+    letter-spacing: -2px;
+    color: var(--accent);
+    font-family: -apple-system, 'Inter', sans-serif;
+    line-height: 1;
+  }
+
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 22px);
+    color: var(--muted);
+    max-width: 600px;
+    line-height: 1.6;
+    font-family: -apple-system, 'Inter', sans-serif;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* generic layout helpers */
+  .slide-header {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    align-self: flex-start;
+    margin-bottom: 32px;
+  }
+
+  .slide-title {
+    font-size: clamp(28px, 4vw, 48px);
+    font-family: -apple-system, 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1.15;
+    color: var(--text);
+    max-width: 900px;
+  }
+
+  .slide-title span { color: var(--accent); }
+
+  .cols {
+    display: grid;
+    gap: 24px;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .card-value {
+    font-size: clamp(14px, 1.8vw, 18px);
+    color: var(--text);
+    line-height: 1.55;
+    font-family: -apple-system, 'Inter', sans-serif;
+  }
+
+  .card-value.accent { color: var(--accent); }
+  .card-value.accent2 { color: var(--accent2); }
+  .card-value.accent3 { color: var(--accent3); }
+
+  .card-icon {
+    font-size: 28px;
+    margin-bottom: 4px;
+  }
+
+  /* code block */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 20px 24px;
+    font-size: 13px;
+    line-height: 1.7;
+    width: 100%;
+    max-width: 800px;
+    white-space: pre;
+    overflow: hidden;
+  }
+
+  .code-comment { color: #444; }
+  .code-key { color: var(--accent2); }
+  .code-val { color: var(--accent); }
+  .code-str { color: #ff9e64; }
+
+  /* problem slide */
+  .big-quote {
+    font-size: clamp(20px, 3vw, 36px);
+    font-family: -apple-system, 'Inter', sans-serif;
+    font-weight: 500;
+    color: var(--text);
+    max-width: 800px;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .big-quote em {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  /* flow diagram */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 960px;
+  }
+
+  .flow-step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 130px;
+    text-align: center;
+  }
+
+  .flow-step:hover { border-color: var(--accent); }
+
+  .flow-icon { font-size: 24px; }
+
+  .flow-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .flow-name {
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .flow-arrow {
+    color: var(--muted);
+    font-size: 18px;
+    padding: 0 4px;
+  }
+
+  /* compare */
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .compare-col { display: flex; flex-direction: column; gap: 12px; }
+
+  .compare-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-label.bad { color: var(--accent3); border-color: var(--accent3); }
+  .compare-label.good { color: var(--accent2); border-color: var(--accent2); }
+
+  .bubble {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    font-size: 13px;
+    line-height: 1.6;
+    font-family: -apple-system, 'Inter', sans-serif;
+  }
+
+  .bubble.bad { border-left: 3px solid var(--accent3); color: #ccc; }
+  .bubble.good { border-left: 3px solid var(--accent2); color: var(--text); }
+
+  .x-mark { color: var(--accent3); font-size: 10px; }
+  .check-mark { color: var(--accent2); font-size: 10px; }
+
+  /* stats */
+  .stat-row {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .stat-box {
+    flex: 1;
+    border: 1px solid var(--border);
+    padding: 24px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: clamp(36px, 5vw, 64px);
+    font-family: -apple-system, 'Inter', sans-serif;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* rule list */
+  .rule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 800px;
+    width: 100%;
+  }
+
+  .rule-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .rule-num {
+    color: var(--accent);
+    font-size: 11px;
+    min-width: 24px;
+    padding-top: 2px;
+  }
+
+  .rule-text {
+    font-size: 15px;
+    line-height: 1.55;
+    font-family: -apple-system, 'Inter', sans-serif;
+    color: var(--text);
+  }
+
+  .rule-text strong { color: var(--accent2); font-weight: 600; }
+
+  /* stack pills */
+  .pill-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 800px;
+    justify-content: center;
+  }
+
+  .pill {
+    border: 1px solid var(--border);
+    padding: 8px 18px;
+    font-size: 13px;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .pill:hover { border-color: var(--accent); color: var(--accent); }
+  .pill.highlight { border-color: var(--accent2); color: var(--accent2); }
+
+  /* CTA slide */
+  .cta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    width: 100%;
+    max-width: 800px;
+  }
+
+  .cta-cell {
+    background: var(--card);
+    padding: 24px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .cta-num {
+    color: var(--accent);
+    font-size: 24px;
+    font-family: -apple-system, 'Inter', sans-serif;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .cta-text { font-size: 14px; line-height: 1.5; color: var(--text); }
+  .cta-text small { color: var(--muted); font-size: 12px; display: block; margin-top: 4px; }
+
+  /* kbd hint */
+  .kbd-hint {
+    position: fixed;
+    bottom: 28px;
+    left: 36px;
+    font-size: 11px;
+    color: #333;
+    letter-spacing: 0.1em;
+  }
+
+  /* slide-specific widths */
+  .slide > * { width: 100%; max-width: 1000px; }
+  .title-slide > * { max-width: 700px; }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide title-slide active" id="s1">
+    <div class="eyebrow">OpenClaw Hackathon 2026</div>
+    <div class="hero-name">Parrot</div>
+    <div class="hero-sub">watches your repo. drafts social posts in your voice. never posts without your tap.</div>
+    <div class="tag">ship / stuck / insight / idle / asked</div>
+  </div>
+
+  <!-- SLIDE 2: The problem -->
+  <div class="slide" id="s2">
+    <div class="slide-header">01 — The Problem</div>
+    <div class="big-quote">
+      you shipped something real today.<br>
+      you will not tweet about it.<br>
+      <em>not because you don't want to.</em><br>
+      because context-switching to write a tweet<br>
+      while you're in flow is its own tax.
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Existing solutions are wrong -->
+  <div class="slide" id="s3">
+    <div class="slide-header">02 — Why Existing Tools Fail</div>
+    <div class="cols cols-3" style="max-width: 900px;">
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <div class="card-label">Generic AI writers</div>
+        <div class="card-value">write from a prompt description. output sounds like every other AI tweet. nobody's fooled.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📅</div>
+        <div class="card-label">Content calendars</div>
+        <div class="card-value">you have to remember to use them. you won't. the guilt builds. you post less.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <div class="card-label">Auto-posters</div>
+        <div class="card-value">they post for you. you disown three posts by lunch. your followers notice.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: How it works -->
+  <div class="slide" id="s4">
+    <div class="slide-header">03 — How Parrot Works</div>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-icon">👁️</div>
+        <div class="flow-label">watch</div>
+        <div class="flow-name">git / files / notes / terminal</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">⚡</div>
+        <div class="flow-label">trigger</div>
+        <div class="flow-name">ship / stuck / insight / idle</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">🎭</div>
+        <div class="flow-label">voice</div>
+        <div class="flow-name">your profile, not a template</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">📱</div>
+        <div class="flow-label">telegram</div>
+        <div class="flow-name">draft + approve / edit / reject</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color: var(--accent);">
+        <div class="flow-icon">📋</div>
+        <div class="flow-label">clipboard</div>
+        <div class="flow-name">you paste it. always.</div>
+      </div>
+    </div>
+    <div style="font-size:12px; color: var(--muted); text-align:center; margin-top:12px; max-width: 700px;">
+      parrot never posts autonomously. the approve button copies text to clipboard. you paste it. every time.
+    </div>
+  </div>
+
+  <!-- SLIDE 5: The moat — voice profile -->
+  <div class="slide" id="s5">
+    <div class="slide-header">04 — The Moat: Voice Profile</div>
+    <div class="cols cols-2" style="max-width: 960px;">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="slide-title" style="font-size: 28px;">built from <span>real artifacts</span>, not prompt descriptions</div>
+        <div class="rule-list">
+          <div class="rule-item">
+            <div class="rule-num">01</div>
+            <div class="rule-text">ingests your tweets, commits, READMEs, blog posts, notes</div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">02</div>
+            <div class="rule-text">computes <strong>statistical features</strong>: casing rate, emoji rate, em-dash usage, sentence length p90</div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">03</div>
+            <div class="rule-text">LLM extracts voice attributes: formality, humor style, directness, hedging rate</div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">04</div>
+            <div class="rule-text">picks 12 <strong>few-shot examples</strong> that best represent your voice per platform</div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">05</div>
+            <div class="rule-text">every edit you make to a draft <strong>feeds back</strong> into the profile</div>
+          </div>
+        </div>
+      </div>
+      <div class="code-block"><span class="code-comment">// voice_profile.json (excerpt)</span>
+{
+  <span class="code-key">"characteristics"</span>: {
+    <span class="code-key">"casing"</span>: {
+      <span class="code-key">"sentence_start_lowercase"</span>: <span class="code-val">0.65</span>
+    },
+    <span class="code-key">"emoji"</span>: {
+      <span class="code-key">"uses_emoji"</span>: <span class="code-val">false</span>,
+      <span class="code-key">"rate_per_post"</span>: <span class="code-val">0.0</span>
+    },
+    <span class="code-key">"avoid_words"</span>: [
+      <span class="code-str">"delve"</span>, <span class="code-str">"leverage"</span>,
+      <span class="code-str">"elevate"</span>, <span class="code-str">"unlock"</span>
+    ],
+    <span class="code-key">"voice_attributes"</span>: {
+      <span class="code-key">"formality"</span>: <span class="code-str">"casual_technical"</span>,
+      <span class="code-key">"humor"</span>: <span class="code-str">"self_deprecating_dry"</span>,
+      <span class="code-key">"directness"</span>: <span class="code-str">"very_direct"</span>
+    }
+  }
+}</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Side-by-side comparison -->
+  <div class="slide" id="s6">
+    <div class="slide-header">05 — The Test That Matters</div>
+    <div class="slide-title" style="margin-bottom: 24px; font-size: 28px;">same input. same commit message. two outputs.</div>
+    <div class="compare-row">
+      <div class="compare-col">
+        <div class="compare-label bad">&#x2717; Generic AI writer</div>
+        <div class="bubble bad">
+          Excited to share that I've just shipped a new feature that leverages cutting-edge technology to help developers navigate the complexities of social media management. This innovative solution will elevate your workflow and unlock new possibilities. Check it out!
+        </div>
+        <div style="font-size: 11px; color: var(--accent3); margin-top: 4px;">
+          &#x2717; "leverage" &#x2717; "navigate" &#x2717; "elevate" &#x2717; "unlock" &#x2717; exclamation point &#x2717; sounds like nobody
+        </div>
+      </div>
+      <div class="compare-col">
+        <div class="compare-label good">&#x2713; Parrot (your voice)</div>
+        <div class="bubble good">
+          shipped a thing where the agent watches your repo and tells you when you should tweet about your work. testing it on myself and it called me out three times today.
+        </div>
+        <div style="font-size: 11px; color: var(--accent2); margin-top: 4px;">
+          &#x2713; lowercase &#x2713; no emoji &#x2713; no AI clichés &#x2713; dry humor &#x2713; sounds like you wrote it
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Five triggers -->
+  <div class="slide" id="s7">
+    <div class="slide-header">06 — Five Triggers</div>
+    <div class="cols cols-3" style="max-width: 1000px;">
+      <div class="card">
+        <div class="card-label">Ship</div>
+        <div class="card-value accent">commit with "ship", "release", "v1", "done" — or >5 files changed</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Stuck</div>
+        <div class="card-value accent2">same error 3x in 60 min. same file edited 5x without commit. same test run 3x.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Insight</div>
+        <div class="card-value" style="color: #c084fc;">new note >50 words. contains "TIL", "learned", "huh". new draft post detected.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Idle</div>
+        <div class="card-value" style="color: #fb923c;">>3 days since last post. surfaces recent unposted events from the queue.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Asked</div>
+        <div class="card-value accent3">user types /draft &lt;topic&gt; in Telegram. direct invocation, no inference needed.</div>
+      </div>
+      <div class="card" style="border-color: var(--border); background: transparent;">
+        <div class="card-label">Each trigger fires</div>
+        <div class="card-value">ship → Twitter + LinkedIn<br>stuck → Twitter (ask for help)<br>insight → all platforms<br>idle → best pending draft</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Demo flow -->
+  <div class="slide" id="s8">
+    <div class="slide-header">07 — Live Demo Flow</div>
+    <div class="cta-grid">
+      <div class="cta-cell">
+        <div class="cta-num">1</div>
+        <div class="cta-text">
+          make a real git commit
+          <small>git commit -m "ship parrot demo"</small>
+        </div>
+      </div>
+      <div class="cta-cell">
+        <div class="cta-num">2</div>
+        <div class="cta-text">
+          parrot detects it within 60 seconds
+          <small>git watcher polls every 60s. no webhooks needed.</small>
+        </div>
+      </div>
+      <div class="cta-cell">
+        <div class="cta-num">3</div>
+        <div class="cta-text">
+          telegram pings with a draft tweet
+          <small>[Approve] [Edit] [Reject] [Skip]</small>
+        </div>
+      </div>
+      <div class="cta-cell">
+        <div class="cta-num">4</div>
+        <div class="cta-text">
+          edit the draft. tap approve.
+          <small>the edit is captured and feeds back into your voice profile.</small>
+        </div>
+      </div>
+      <div class="cta-cell">
+        <div class="cta-num">5</div>
+        <div class="cta-text">
+          text copied to clipboard
+          <small>you paste it into Twitter manually. parrot never posts.</small>
+        </div>
+      </div>
+      <div class="cta-cell">
+        <div class="cta-num">6</div>
+        <div class="cta-text">
+          same insight, different platforms
+          <small>Twitter: 280 chars. LinkedIn: 200 words. dev.to: technical, with code blocks.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: Hard rules -->
+  <div class="slide" id="s9">
+    <div class="slide-header">08 — Hard Rules (enforced in code, not prompts)</div>
+    <div class="rule-list">
+      <div class="rule-item">
+        <div class="rule-num">✗</div>
+        <div class="rule-text"><strong>never auto-posts.</strong> the approve button copies text to clipboard. you paste. every time, no exceptions.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">✗</div>
+        <div class="rule-text"><strong>never invents facts.</strong> every draft is grounded in an actual artifact (commit message, note text, diff). no signal = no draft.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">✗</div>
+        <div class="rule-text"><strong>never sends your data anywhere without consent.</strong> you configure the LLM provider. no telemetry. no third-party calls without an API key you set.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">✗</div>
+        <div class="rule-text"><strong>never sanitizes your voice.</strong> if you wrote "this bug was annoying as hell", the draft does not soften it to "this issue presented some challenges".</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">✗</div>
+        <div class="rule-text"><strong>never uses em-dashes.</strong> sanitized post-LLM. because em-dashes are an AI tell and real builders don't write that way.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Stack -->
+  <div class="slide" id="s10">
+    <div class="slide-header">09 — Stack</div>
+    <div class="stat-row" style="margin-bottom: 32px;">
+      <div class="stat-box">
+        <div class="stat-num">0</div>
+        <div class="stat-desc">database</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">0</div>
+        <div class="stat-desc">auto-posts</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">5</div>
+        <div class="stat-desc">platforms</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">60s</div>
+        <div class="stat-desc">commit → draft</div>
+      </div>
+    </div>
+    <div class="pill-grid">
+      <div class="pill highlight">Python 3.11+</div>
+      <div class="pill highlight">Groq (default, free)</div>
+      <div class="pill highlight">Telegram bot</div>
+      <div class="pill">watchdog (file events)</div>
+      <div class="pill">JSON flat files only</div>
+      <div class="pill">OpenClaw skill format</div>
+      <div class="pill">anthropic / openrouter / together</div>
+      <div class="pill">uv package manager</div>
+      <div class="pill">pytest</div>
+    </div>
+    <div style="font-size: 12px; color: var(--muted); text-align: center; margin-top: 20px; max-width: 600px;">
+      default LLM is Groq (free tier, Qwen 3 32B). no local model install. swap to Anthropic or OpenRouter via one .env line.
+    </div>
+  </div>
+
+  <!-- SLIDE 11: Final -->
+  <div class="slide title-slide" id="s11">
+    <div class="eyebrow">Parrot — OpenClaw Hackathon 2026</div>
+    <div class="hero-name" style="font-size: clamp(48px, 7vw, 80px); margin-bottom: 8px;">ship the thing.</div>
+    <div class="hero-name" style="font-size: clamp(48px, 7vw, 80px); color: var(--accent2); margin-bottom: 8px;">tell people about it.</div>
+    <div class="hero-name" style="font-size: clamp(48px, 7vw, 80px); color: var(--muted);">in your voice.</div>
+    <div style="margin-top: 32px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+      <div class="tag" style="border-color: var(--accent2); color: var(--accent2);">python -m scripts.demo</div>
+      <div class="tag">github.com/nidhiiiiii/parrot</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button onclick="prev()">← prev</button>
+  <span class="slide-counter" id="counter">1 / 11</span>
+  <button onclick="next()">next →</button>
+</div>
+
+<div class="kbd-hint">← → arrow keys to navigate</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  function go(n) {
+    if (n < 0 || n >= total) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    setTimeout(() => slides[current === n ? n : current].classList.remove('exit'), 300);
+    current = n;
+    slides[current].classList.add('active');
+    document.getElementById('counter').textContent = `${current + 1} / ${total}`;
+    document.getElementById('progress').style.width = `${((current + 1) / total) * 100}%`;
+  }
+
+  function next() { go(Math.min(current + 1, total - 1)); }
+  function prev() { go(Math.max(current - 1, 0)); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(); }
+  });
+
+  // init progress
+  document.getElementById('progress').style.width = `${(1 / total) * 100}%`;
+</script>
+
+</body>
+</html>
