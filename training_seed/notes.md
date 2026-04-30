@@ -2,7 +2,7 @@
 
 ## hackathon postmortem
 
-shipped voiceful in a weekend. the voice profile actually held up. the bit i underestimated was how much the few-shot examples carry the output. you can have all the stats in the world but if your few-shot examples are mid, the model will write mid.
+shipped parrot in a weekend. the voice profile actually held up. the bit i underestimated was how much the few-shot examples carry the output. you can have all the stats in the world but if your few-shot examples are mid, the model will write mid.
 
 biggest lesson: don't put 500 samples in one prompt. batch them. merge results. obvious in hindsight.
 

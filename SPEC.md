@@ -1,6 +1,6 @@
 # SPEC.md
 
-Technical specification for Voiceful. Read CLAUDE.md first for project philosophy and constraints.
+Technical specification for Parrot. Read CLAUDE.md first for project philosophy and constraints.
 
 ## 1. The voice profile
 

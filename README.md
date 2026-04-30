@@ -1,6 +1,6 @@
-# Voiceful
+# Parrot
 
-Proactive observational agent that watches your workspace, detects post-worthy moments (ship / stuck / insight / idle / asked), and drafts platform-specific social posts in your authentic voice. Sends drafts to Telegram with approve / edit / reject buttons.
+Parrot is a proactive observational agent that watches your workspace, detects post-worthy moments (ship / stuck / insight / idle / asked), and drafts platform-specific social posts in your authentic voice. Sends drafts to Telegram with approve / edit / reject buttons.
 
 **Never auto-posts.** Every post requires your explicit tap-approval.
 
@@ -30,7 +30,7 @@ Get a Telegram bot:
 ### 1. Install
 
 ```bash
-cd /path/to/voiceful
+cd /path/to/parrot
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
@@ -80,12 +80,12 @@ Inspect `~/.openclaw/voiceful/voice_profile.json`. If the voice attributes feel 
 ### 4. Test a draft
 
 ```bash
-python -m scripts.main test-draft twitter "shipped voiceful, the agent that watches your repo"
+python -m scripts.main test-draft twitter "shipped parrot, the agent that watches your repo"
 ```
 
 Side-by-side comparison vs a generic LLM:
 ```bash
-python -m scripts.main compare "shipped voiceful, the agent that watches your repo"
+python -m scripts.main compare "shipped parrot, the agent that watches your repo"
 ```
 
 Or run the full 3-case demo:
@@ -99,7 +99,7 @@ Add the repos you want watched to `~/.openclaw/voiceful/config.yaml`:
 ```yaml
 watchers:
   repos:
-    - "~/code/voiceful"
+    - "~/code/parrot"
     - "~/code/your-other-repo"
   notes_dir: "~/notes"
 ```
@@ -129,7 +129,7 @@ Or wire it into cron from `jobs.json`:
 
 1. `python -m scripts.main run-bot` in one terminal
 2. `python -m scripts.main watch` in another
-3. Make a real commit: `git commit -m "ship voiceful demo"`
+3. Make a real commit: `git commit -m "ship parrot demo"`
 4. Within 60 seconds, your Telegram bot pings you with a draft tweet, in your voice, with approve/edit/reject buttons.
 5. Tap approve. Text is copied to your clipboard. Paste into Twitter manually.
 
@@ -139,7 +139,7 @@ This project is structured as an OpenClaw skill (`SKILL.md`, `jobs.json`, `scrip
 
 To install:
 ```bash
-ln -s "$(pwd)" ~/.openclaw/skills/voiceful
+ln -s "$(pwd)" ~/.openclaw/skills/parrot
 ```
 
 OpenClaw discovers the skill from `SKILL.md` and registers cron from `jobs.json`. The Telegram bot still runs as a separate long-lived process: `python -m scripts.main run-bot`.
@@ -182,7 +182,7 @@ These are enforced in code, not just prompts:
 ## Project layout
 
 ```
-voiceful/
+parrot/
 ├── SKILL.md
 ├── jobs.json
 ├── pyproject.toml

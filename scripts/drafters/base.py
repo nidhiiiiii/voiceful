@@ -48,7 +48,20 @@ class BaseDrafter(ABC):
         user_msg = self._build_user_message(trigger_event, few_shots)
         log.debug("Drafter %s system_chars=%d user_chars=%d", self.platform, len(system), len(user_msg))
         raw = self.llm.complete(system=system, user=user_msg, max_tokens=self.max_tokens())
-        return sanitize_voice(raw, self.profile)
+        out = sanitize_voice(raw, self.profile)
+        if out:
+            return out
+
+        # Providers sometimes return empty content (or content fully stripped by sanitizer).
+        # Retry once with an explicit minimum-output requirement, then fall back to a safe
+        # "need more context" message (still grounded, no invented facts).
+        retry_user = user_msg + "\n\nIMPORTANT: Output at least one sentence. If you cannot, ask for more context in one sentence."
+        raw2 = self.llm.complete(system=system, user=retry_user, max_tokens=self.max_tokens())
+        out2 = sanitize_voice(raw2, self.profile)
+        if out2:
+            return out2
+        log.warning("Empty draft after retry. trigger_type=%s platform=%s", trigger_event.get("type"), self.platform)
+        return "need a bit more context to draft this. send 1-2 specifics and i’ll rewrite."
 
     def _build_user_message(self, event: dict[str, Any], few_shots: list[dict[str, Any]]) -> str:
         shots_block = ""

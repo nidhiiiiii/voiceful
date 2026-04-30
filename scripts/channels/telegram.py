@@ -249,7 +249,7 @@ async def _cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         "Commands:\n"
         "/draft <topic> draft a tweet on a topic\n"
         "/queue show pending drafts\n"
-        "/voice-status show voice profile stats"
+        "/voice_status show voice profile stats"
     )
 
 
@@ -262,7 +262,6 @@ def build_app(cfg: Config, profile=None, llm=None) -> Application:
     app.add_handler(CommandHandler("draft", _cmd_draft))
     app.add_handler(CommandHandler("queue", _cmd_queue))
     app.add_handler(CommandHandler("voice_status", _cmd_voice_status))
-    app.add_handler(CommandHandler("voice-status", _cmd_voice_status))
     app.add_handler(CallbackQueryHandler(_on_callback))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, _on_message))
     return app

@@ -3,7 +3,7 @@
 This skill follows the standard OpenClaw layout:
 
 ```
-~/.openclaw/skills/voiceful/
+~/.openclaw/skills/parrot/
 ├── SKILL.md      # YAML frontmatter manifest
 ├── jobs.json     # cron schedule
 ├── scripts/      # python entrypoints
@@ -13,10 +13,10 @@ This skill follows the standard OpenClaw layout:
 ## Install as an OpenClaw skill
 
 ```
-ln -s "$(pwd)" ~/.openclaw/skills/voiceful
+ln -s "$(pwd)" ~/.openclaw/skills/parrot
 ```
 
-Or copy the directory into `~/.openclaw/skills/voiceful/`.
+Or copy the directory into `~/.openclaw/skills/parrot/`.
 
 OpenClaw discovers the skill by reading `SKILL.md` (top-level `name:` field) and registers cron from `jobs.json`.
 
@@ -25,9 +25,9 @@ OpenClaw discovers the skill by reading `SKILL.md` (top-level `name:` field) and
 The skill also runs without OpenClaw. The `jobs.json` entries map 1:1 to crontab lines:
 
 ```
-*/5 * * * *  cd /path/to/voiceful && .venv/bin/python -m scripts.main poll-git
-*/15 * * * * cd /path/to/voiceful && .venv/bin/python -m scripts.main poll-terminal
-0 */6 * * *  cd /path/to/voiceful && .venv/bin/python -m scripts.main check-idle
+*/5 * * * *  cd /path/to/parrot && .venv/bin/python -m scripts.main poll-git
+*/15 * * * * cd /path/to/parrot && .venv/bin/python -m scripts.main poll-terminal
+0 */6 * * *  cd /path/to/parrot && .venv/bin/python -m scripts.main check-idle
 ```
 
 The Telegram bot runs as a long-lived process: `python -m scripts.main run-bot`.

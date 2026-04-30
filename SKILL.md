@@ -1,11 +1,11 @@
 ---
-name: voiceful
+name: parrot
 description: Watches your workspace for post-worthy moments and drafts social posts in your authentic voice. Never posts on its own. Use when the user wants to maintain their social presence (Twitter, LinkedIn, Medium, dev.to, Hashnode) without writing posts manually, while keeping their authorial voice intact.
 ---
 
-# Voiceful
+# Parrot
 
-Voiceful is a proactive observational skill that watches the user's real work (git commits, code changes, notes files) and drafts social posts that sound like the user wrote them.
+Parrot is a proactive observational skill that watches the user's real work (git commits, code changes, notes files) and drafts social posts that sound like the user wrote them.
 
 ## When to use this skill
 
@@ -35,6 +35,6 @@ Voiceful is a proactive observational skill that watches the user's real work (g
 ## Commands
 
 - `/draft <topic>` request a draft on a specific topic
-- `/voice-status` show voice profile stats
+- `/voice_status` show voice profile stats
 - `/queue` show pending drafts
 - `/refine` rebuild voice profile incorporating recent edits
