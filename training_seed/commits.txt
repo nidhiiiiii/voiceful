@@ -1,0 +1,12 @@
+fix off-by-one in retry logic
+add stuck trigger, deduplicate by error signature
+delete dead code in profile builder
+voice profile: batch llm calls per 50 samples
+telegram: capture edits before approval
+ship git watcher + ship trigger end to end
+remove emoji from default config, nidhi never uses them
+fix: sanitize em-dashes from llm output
+add side-by-side compare CLI for demo
+tests: voice authenticity assertions
+readme: actual setup instructions
+config: switch default to groq

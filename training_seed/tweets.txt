@@ -1,0 +1,30 @@
+shipped a thing where the agent watches your repo and tells you when you should tweet about your work. testing it on myself and it called me out three times today.
+spent 90 min on what turned out to be a typo in a config file. genuinely impressed by how badly i can read sometimes.
+the worst part of debugging is when you finally find it and the fix is one line.
+i keep telling myself i'll write more but every weekend turns into another hackathon.
+ship the rough version. nobody cares about your perfect draft sitting in your notes app.
+hot take: most "AI productivity tools" are just spicy autocomplete with a dashboard.
+your CI pipeline is not the bottleneck, your code review process is.
+finally got the demo to work 6 minutes before the deadline. classic.
+the difference between a junior and a senior engineer is the senior knows when to delete the code.
+"can you make it faster" yes by deleting the feature you asked for last week
+took a 3 hour walk and solved the bug in my head, didn't even open my laptop.
+why does every meeting end with "let's set up another meeting"
+just realized i've been using the wrong index for two weeks. queries are 80x faster now.
+the project is going great if you don't look at the queue depth on the worker pool
+half my commits are "wip" and i refuse to clean it up
+docs are a love letter from past you to future you and most engineers write hate mail
+notion is just a slower version of a folder of markdown files. fight me.
+the bug was in the test, not the code. spent four hours not believing it.
+sometimes the best optimization is just removing the feature
+i don't trust any deploy that goes through on the first try
+got woken up at 3am by an alert that turned out to be the alert itself being broken
+just discovered my "thoughts" doc is 14k words. ten of them are useful.
+you can't refactor your way out of bad product decisions
+typed sum() instead of len() somewhere and lost an entire afternoon
+started a project at 11pm "just to play around", it's 4am and i have a working prototype
+the team that ships small wins every day beats the team waiting for the perfect release
+my linter is yelling at me and it is correct and i hate it
+deleted 800 lines today. net negative diff. best feeling in engineering.
+turns out my "fast" algorithm was fast because it was wrong
+no amount of tooling fixes a problem that's actually a communication issue

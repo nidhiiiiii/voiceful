@@ -1,0 +1,19 @@
+{
+  "jobs": [
+    {
+      "name": "voiceful-git-poll",
+      "schedule": "*/5 * * * *",
+      "command": "python -m scripts.main poll-git"
+    },
+    {
+      "name": "voiceful-terminal-poll",
+      "schedule": "*/15 * * * *",
+      "command": "python -m scripts.main poll-terminal"
+    },
+    {
+      "name": "voiceful-idle-check",
+      "schedule": "0 */6 * * *",
+      "command": "python -m scripts.main check-idle"
+    }
+  ]
+}
